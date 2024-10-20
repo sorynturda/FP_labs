@@ -48,3 +48,35 @@ indexList lx i =
     else
       helper lx i 0
   
+fibs : Int -> Int -> List Int
+fibs start end = 
+  let
+    fibHelper x y f1 f2 i acc =
+      if y < i then
+        acc
+      else
+        if x < i then 
+          fibHelper x y f2 (f1 + f2) (i + 1) (f1::acc)
+        else
+          fibHelper x y f2 (f1 + f2) (i + 1) acc
+  in
+    List.reverse (fibHelper start end 1 1 1 [])
+
+fibs2 : Int -> Int -> List (Int, Int)
+fibs2 start end = 
+  let
+    fibHelper x y f1 f2 i acc =
+      if y < i then
+        acc
+      else
+        if x < i then 
+          fibHelper x y f2 (f1 + f2) (i + 1) ((i - 1, f1)::acc)
+        else
+          fibHelper x y f2 (f1 + f2) (i + 1) acc
+  in
+    List.reverse (fibHelper start end 1 1 1 [])
+
+
+
+
+
