@@ -56,11 +56,13 @@ fibs start end =
         acc
       else
         if x < i then 
-          fibHelper x y f2 (f1 + f2) (i + 1) (f1::acc)
+          -- fibHelper x y f2 (f1 + f2) (i + 1) (f1::acc)
+          fibHelper x y f2 (f1 + f2) (i + 1) (acc ++ f1::[])
+
         else
           fibHelper x y f2 (f1 + f2) (i + 1) acc
   in
-    List.reverse (fibHelper start end 1 1 1 [])
+    fibHelper start end 1 1 1 []
 
 fibs2 : Int -> Int -> List (Int, Int)
 fibs2 start end = 
@@ -75,8 +77,3 @@ fibs2 start end =
           fibHelper x y f2 (f1 + f2) (i + 1) acc
   in
     List.reverse (fibHelper start end 1 1 1 [])
-
-
-
-
-
