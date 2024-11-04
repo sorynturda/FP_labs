@@ -1,7 +1,7 @@
 module Exercises exposing (..)
 
 import Theme exposing (ThemeConfig(..))
-
+import Lists exposing (filter, map)
 
 type alias UserDetails = 
   { firstName: String
@@ -15,8 +15,10 @@ makeUser id email firstName lastName phoneNumber =
   User id email (UserDetails firstName lastName phoneNumber)
 
 usersWithPhoneNumbers : List User -> List String
-usersWithPhoneNumbers users = Debug.todo "Implement this function"
-
+usersWithPhoneNumbers users =
+  users
+    |> filter (.details >> .phoneNumber >> (\x -> not (x == Nothing)))
+    |> map (\x -> x.email)
 
 type alias AccountConfiguration = 
   { preferredTheme: ThemeConfig
@@ -26,4 +28,7 @@ type alias AccountConfiguration =
 
 
 changePreferenceToDarkTheme : List AccountConfiguration -> List AccountConfiguration
-changePreferenceToDarkTheme accounts = Debug.todo "Implement this function"
+changePreferenceToDarkTheme accounts = 
+  accounts
+    |> filter (\x -> x.preferredTheme == Dark)
+
