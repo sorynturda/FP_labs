@@ -16,12 +16,12 @@ import Documentation exposing (..)
 
 spec0 : Test.Test
 spec0 =
-    Test.test "#combinations: \n\n    combinations [1, 2, 3]\n    -->  [[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]" <|
+    Test.test "#combinations: \n\n    combinations [1, 2, 3]\n    --> [[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]" <|
         \() ->
             Expect.equal
                 (
                 combinations [1, 2, 3]
                 )
                 (
-                 [[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]
+                [[1,2,3],[1,2],[1,3],[1],[2,3],[2],[3],[]]
                 )

@@ -4,6 +4,9 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (checked, placeholder, style, type_, value)
 import Html.Events exposing (..)
+import List exposing (length)
+import String exposing (length)
+import Html.Attributes exposing (disabled, hidden)
 
 
 main =
@@ -49,6 +52,7 @@ type alias Model =
     , activateAccount : Bool
     , username : String
     , password : String
+    , confirmPassword : String
     , emailAddress : Maybe String
     }
 
@@ -58,12 +62,13 @@ type Msg
     = SelectedValue String
     | UsernameChanged String
     | PasswordChanged String
+    | ConfirmPasswordChanged String
     | SetActivateAccount Bool
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { accountType = User, activateAccount = False, username = "", password = "", emailAddress = Nothing }
+    ( { accountType = User, activateAccount = False, username = "", password = "", confirmPassword="", emailAddress = Nothing }
     , Cmd.none
     )
 
@@ -91,6 +96,11 @@ update msg model =
             , Cmd.none
             )
 
+        ConfirmPasswordChanged confirmPassword ->
+            ( { model | confirmPassword = confirmPassword }
+            , Cmd.none
+            )
+
         SetActivateAccount activate ->
             ( { model | activateAccount = activate }
             , Cmd.none
@@ -112,14 +122,43 @@ accountTypeView =
 
 
 accountDetailsView : Model -> Html Msg
-accountDetailsView { username, password } =
+accountDetailsView { username, password, confirmPassword, accountType } =
     let
         inputAttrs ty p v msg =
             [ type_ ty, placeholder p, value v, onInput msg ]
+        matchy = confirmPassword == password
+        enoughCh = 
+          if accountType == Admin then
+            (String.length password) >= 12
+          else
+            (String.length password) >= 8
+        onButton = not ((String.length username) > 0 && (String.length password) > 0 && matchy && enoughCh)
+        
     in
     div []
         [ input (inputAttrs "text" "username" username UsernameChanged) []
         , input (inputAttrs "password" "password" password PasswordChanged) []
+        , input (inputAttrs "password" "confirmPassword" confirmPassword ConfirmPasswordChanged) []
+        , button [disabled onButton] [text "Create account"]
+        , p
+         [
+            style "color"
+                <|
+                if password == "" then "black" else
+                if not matchy then
+                    "red"
+                else
+                    "green"
+            , style "font-size" "50pt"
+         ]
+        [text "blabla"]
+        , p [ style "color" "black", style "font-size" "50pt", hidden enoughCh]
+         [
+          text <|
+            if accountType == User then "parola trebuie sa contina cel putin 8 caractere"
+            else "parola trebuie sa contina cel putin 12 caractere"
+          ]
+          
         ]
 
 
@@ -140,6 +179,7 @@ statusView model =
         [ p [] [ text "Account type: ", text <| accountTypeToString model.accountType ]
         , p [] [ text "Username: ", text model.username ]
         , p [] [ text "Password: ", text model.password ]
+        , p [] [ text "Confirm password: ", text model.confirmPassword ]
         , p []
             [ text <|
                 if model.activateAccount then

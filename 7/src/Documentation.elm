@@ -21,5 +21,16 @@ Combinations are **not** returned in lexicographic order.
 ```
 
 -}
-combinations : List a -> List (List a)
-combinations l = Debug.todo "Implement combinations"
+combinationsr : List a -> List (List a)
+combinationsr list =
+    case list of
+        [] ->
+            [ [] ]  
+        x :: xs ->
+            let
+                restCombinations = combinationsr xs
+            in
+            restCombinations ++ List.map ((::) x) restCombinations
+
+combinations list = List.reverse (combinationsr list)
+
