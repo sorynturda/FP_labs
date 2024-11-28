@@ -59,10 +59,11 @@ If the `Cursor` is focused on the last element, it returns `Nothing`
 
 -}
 advance : PostIds -> Maybe ( Int, PostIds )
-advance _ =
-    Nothing
+advance (PostIds ids) =
+    -- Nothing
     -- Debug.todo "advance"
-
+    Cursor.forward ids 
+        |> Maybe.map (\newIds -> (Cursor.current newIds, PostIds newIds))
 
 {-| Returns the first post id
 
@@ -93,5 +94,6 @@ If the list is empty, the function returns `Nothing`.
 -}
 decode : De.Decoder (Maybe PostIds)
 decode =
-    De.fail "TODO"
+    -- De.fail "TODO"
     -- Debug.todo "PostIds.decode"
+    De.list De.int |> De.map fromList

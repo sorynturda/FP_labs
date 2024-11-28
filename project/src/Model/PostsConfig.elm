@@ -43,9 +43,16 @@ sortToString sort =
 
 -}
 sortFromString : String -> Maybe SortBy
-sortFromString _ =
+sortFromString s =
     -- Nothing
-    Debug.todo "sortFromString"
+    -- Debug.todo "sortFromString"
+        case s of 
+            "Score" -> Just Score
+            "Title" -> Just Title
+            "Posted" -> Just Posted
+            "None" -> Just None
+            _ -> Nothing
+    
 
 
 sortToCompareFn : SortBy -> (Post -> Post -> Order)
