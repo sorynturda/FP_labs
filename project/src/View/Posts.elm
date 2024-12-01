@@ -28,10 +28,47 @@ Relevant library functions:
 
 -}
 postTable : PostsConfig -> Time.Posix -> List Post -> Html Msg
-postTable _ _ _ =
-    div [] []
+postTable config now posts =
+    -- div [] []
     -- Debug.todo "postTable"
-
+    Html.table []
+        [ Html.thead []
+            [ Html.tr []
+                [ Html.th [] [ text "Score" ]
+                , Html.th [] [ text "Title" ]
+                , Html.th [] [ text "Type" ]
+                , Html.th [] [ text "Posted" ]
+                , Html.th [] [ text "Link" ]
+                ]
+            ]
+        , Html.tbody []
+            (posts
+                |> filterPosts config
+                |> List.map (\post ->
+                    Html.tr []
+                        [ Html.td [ Html.Attributes.class "post-score" ] 
+                            [ text (String.fromInt post.score) ]
+                        , Html.td [ Html.Attributes.class "post-title" ] 
+                            [ text post.title ]
+                        , Html.td [ Html.Attributes.class "post-type" ] 
+                            [ text post.type_ ]
+                        , Html.td [ Html.Attributes.class "post-time" ] 
+                            [ text (Util.Time.formatTime Time.utc post.time ++ 
+                                  " (" ++ 
+                                  (Util.Time.durationBetween post.time now
+                                    |> Maybe.map Util.Time.formatDuration
+                                    |> Maybe.withDefault "") ++
+                                  " ago)") 
+                            ]
+                        , Html.td [ Html.Attributes.class "post-url" ] 
+                            [ case post.url of
+                                Just url -> Html.a [ href url ] [ text "Link" ]
+                                Nothing -> text "N/A"
+                            ]
+                        ]
+                )
+            )
+        ]
 
 {-| Show the configuration options for the posts table
 
@@ -48,6 +85,68 @@ Relevant functions:
 
 -}
 postsConfigView : PostsConfig -> Html Msg
-postsConfigView _ =
-    div [] []
+postsConfigView config =
+    -- div [] []
     -- Debug.todo "postsConfigView"
+    div []
+        [ div []
+            [ text "Posts per page: "
+            , Html.select 
+                [ Html.Attributes.id "select-posts-per-page"
+                , Html.Events.onInput (\s -> 
+                    String.toInt s 
+                        |> Maybe.map (ChangePostsToShow >> ConfigChanged)
+                        |> Maybe.withDefault (ConfigChanged (ChangePostsToShow config.postsToShow))
+                  )
+                ]
+                [ Html.option 
+                    [ Html.Attributes.value "10"
+                    , Html.Attributes.selected (config.postsToShow == 10)
+                    ] [ text "10" ]
+                , Html.option 
+                    [ Html.Attributes.value "25"
+                    , Html.Attributes.selected (config.postsToShow == 25)
+                    ] [ text "25" ]
+                , Html.option 
+                    [ Html.Attributes.value "50"
+                    , Html.Attributes.selected (config.postsToShow == 50)
+                    ] [ text "50" ]
+                ]
+            ]
+        , div []
+            [ text "Sort by: "
+            , Html.select 
+                [ Html.Attributes.id "select-sort-by"
+                , Html.Events.onInput (\s -> 
+                    sortFromString s
+                        |> Maybe.map (ChangeSortBy >> ConfigChanged)
+                        |> Maybe.withDefault (ConfigChanged (ChangeSortBy config.sortBy))
+                  )
+                ]
+                (sortOptions |> List.map (\sort ->
+                    Html.option 
+                        [ Html.Attributes.value (sortToString sort)
+                        , Html.Attributes.selected (config.sortBy == sort)
+                        ] 
+                        [ text (sortToString sort) ]
+                ))
+            ]
+        , div []
+            [ Html.input 
+                [ Html.Attributes.type_ "checkbox"
+                , Html.Attributes.id "checkbox-show-job-posts"
+                , Html.Attributes.checked config.showJobs
+                , Html.Events.onCheck (ChangeShowJobs >> ConfigChanged)
+                ] []
+            , text " Show job posts"
+            ]
+        , div []
+            [ Html.input 
+                [ Html.Attributes.type_ "checkbox"
+                , Html.Attributes.id "checkbox-show-text-only-posts"
+                , Html.Attributes.checked config.showTextOnly
+                , Html.Events.onCheck (ChangeShowTextOnly >> ConfigChanged)
+                ] []
+            , text " Show text-only posts"
+            ]
+        ]

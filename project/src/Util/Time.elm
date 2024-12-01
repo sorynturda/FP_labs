@@ -156,7 +156,7 @@ durationBetween t1 t2 =
             hours = modBy 24 (diff // (60 * 60 * 1000))
             days = diff // (24 * 60 * 60 * 1000)
         in
-        Just (Duration seconds minutes hours days)
+            Just (Duration seconds minutes hours days)
 
 
 {-| Format a `Duration` as a human readable string
@@ -190,5 +190,5 @@ formatDuration duration =
         
     
     in
-        d ++ h ++ m ++ s ++ "ago" |> Debug.log ""
+        d ++ h ++ m ++ s ++ "ago"
         
