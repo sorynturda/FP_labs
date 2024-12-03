@@ -139,9 +139,24 @@ durationBetween (Time.millisToPosix 1000) (Time.millisToPosix 1000) --> Nothing
 
 -}
 durationBetween : Time.Posix -> Time.Posix -> Maybe Duration
-durationBetween _ _ =
+durationBetween t1 t2 =
     -- Nothing
-    Debug.todo "durationBetween"
+    -- Debug.todo "durationBetween"
+    let
+        ms1 = Time.posixToMillis t1
+        ms2 = Time.posixToMillis t2
+        diff = ms2 - ms1
+    in
+    if diff <= 0 then
+        Nothing
+    else
+        let
+            seconds = modBy 60 (diff // 1000)
+            minutes = modBy 60 (diff // (60 * 1000))
+            hours = modBy 24 (diff // (60 * 60 * 1000))
+            days = diff // (24 * 60 * 60 * 1000)
+        in
+            Just (Duration seconds minutes hours days)
 
 
 {-| Format a `Duration` as a human readable string
@@ -164,6 +179,16 @@ durationBetween _ _ =
 
 -}
 formatDuration : Duration -> String
-formatDuration _ =
+formatDuration duration =
     -- ""
-    Debug.todo "formatDuration"
+    -- Debug.todo "formatDuration"
+    let
+        d = if duration.days > 0 then String.fromInt duration.days ++ " " ++ if duration.days == 1 then "day " else "days " else "" 
+        h = if duration.hours > 0 then String.fromInt duration.hours ++ " " ++ if duration.hours == 1 then "hour " else "hours " else "" 
+        m = if duration.minutes > 0 then String.fromInt duration.minutes ++ " " ++ if duration.minutes == 1 then "minute " else "minutes " else "" 
+        s = if duration.seconds > 0 then String.fromInt duration.seconds ++ " " ++ if duration.seconds == 1 then "second " else "seconds " else "" 
+        
+    
+    in
+        d ++ h ++ m ++ s ++ "ago"
+        

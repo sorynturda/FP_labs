@@ -11,6 +11,7 @@ Finally, focusing on the third element is: `Cursor [2, 1] 3 []`.
 **Note that the left part of the list is stored in reverse order!**
 
 -}
+import List exposing (length)
 
 
 type Cursor a
@@ -35,9 +36,13 @@ nonEmpty x xs =
 
 -}
 fromList : List a -> Maybe (Cursor a)
-fromList _ =
+fromList l =
     -- Nothing
-    Debug.todo "fromList"
+    -- Debug.todo "fromList"
+    case l of 
+      [] -> Nothing
+      x::xs -> Just (Cursor [] x xs)
+    
 
 
 {-| Convert the `Cursor` to a `List`
@@ -46,10 +51,10 @@ fromList _ =
 
 -}
 toList : Cursor a -> List a
-toList _ =
+toList (Cursor left mid right) =
     -- []
-    Debug.todo "toList"
-
+    -- Debug.todo "toList"
+    List.reverse left ++ [mid] ++ right
 
 {-| Get the current element from the cursor
 
@@ -77,9 +82,12 @@ If the cursor would go past the last element, the function should return `Nothin
 
 -}
 forward : Cursor a -> Maybe (Cursor a)
-forward _ =
+forward (Cursor left mid right) =
     -- Nothing
-    Debug.todo "forward"
+    -- Debug.todo "forward"
+    case right of
+      [] -> Nothing
+      x::xs -> Just (Cursor (List.reverse (left ++ [mid])) x xs)
 
 
 {-| Move the cursor backward.
@@ -90,13 +98,18 @@ If the cursor would go before the first element, the function should return `Not
 
     back (nonEmpty 1 []) --> Nothing
 
+    back (nonEmpty [3, 2, 1] 4 [5, 6]) --> [2, 1] 3 [4, 5, 6]
+
     nonEmpty 1 [ 2, 3 ] |> forward |> Maybe.andThen back --> Just (withSelectedElement [] 1 [2, 3])
 
 -}
 back : Cursor a -> Maybe (Cursor a)
-back _ =
+back (Cursor left mid right) =
     -- Nothing
-    Debug.todo "back"
+    -- Debug.todo "back"
+    case left of 
+      [] -> Nothing
+      x::xs -> Just (Cursor xs x (mid::right))
 
 
 {-| Get the number of elements
@@ -107,6 +120,7 @@ back _ =
 
 -}
 length : Cursor a -> Int
-length _ =
+length (Cursor left mid right) =
     -- 0
-    Debug.todo "length"
+    -- Debug.todo "length"
+    List.length left + 1 + List.length right
